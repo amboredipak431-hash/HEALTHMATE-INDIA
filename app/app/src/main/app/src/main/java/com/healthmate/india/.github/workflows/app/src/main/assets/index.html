@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HealthMate India</title>
+<style>
+:root{--teal:#0F8F85;--bg:#F4F8F8;--text:#1d2b2a}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans Devanagari",sans-serif;background:var(--bg);color:var(--text)}
+header{background:var(--teal);color:#fff;padding:20px 16px;text-align:center;position:relative}
+header h1{margin:6px 0 0;font-size:22px}
+header p{margin:4px 0 0;font-size:13px;opacity:.9}
+.back{display:none;background:none;border:0;color:#fff;font-size:15px;position:absolute;left:10px;top:14px}
+main{padding:16px}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.card h2{margin:0 0 6px;font-size:17px;color:var(--teal)}
+.card p{margin:0;font-size:14px;line-height:1.6}
+.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--teal);color:#fff;font-size:16px;padding:14px;margin-top:10px}
+.btn.alt{background:#fff;color:var(--teal);border:2px solid var(--teal)}
+.note{font-size:12px;color:#5a6b6a;text-align:center;margin:16px 0}
+.lock{opacity:.45}
+</style>
+</head>
+<body>
+<header>
+<button id="back" class="back" onclick="home()">← मागे</button>
+<svg width="56" height="56" viewBox="100 40 180 150"><path d="M190 180 C118 128 108 68 150 54 C172 46 190 62 190 76 C190 62 208 46 230 54 C272 68 262 128 190 180 Z" fill="#fff"/><circle cx="190" cy="96" r="10" fill="#0F8F85"/><path d="M190 112 L190 140" stroke="#0F8F85" stroke-width="8" stroke-linecap="round"/><path d="M170 122 L210 122" stroke="#0F8F85" stroke-width="7" stroke-linecap="round"/></svg>
+<h1>HealthMate India</h1>
+<p>Know your body, stay healthy</p>
+</header>
+<main id="main"></main>
+
+<script>
+window.HM = {
+  age: '',
+  pages: {},
+  items: [
+    {id:'girl', t:'मुलगी', d:'वयानुसार शरीर बदल', min:15},
+    {id:'boy', t:'मुलगा', d:'वयानुसार शरीर बदल', min:15},
+    {id:'adult', t:'प्रौढ', d:'शरीराची काळजी', min:15},
+    {id:'body', t:'माझे शरीर', d:'माहिती आणि परिणाम', min:15},
+    {id:'sexual', t:'लैंगिक आरोग्य', d:'माहिती आणि परिणाम (१८+ साठी)', min:18},
+    {id:'myths', t:'गैरसमज vs सत्य', d:'खरे काय, खोटे काय', min:15},
+    {id:'quiz', t:'Quiz', d:'स्वतःला तपासा', min:15},
+    {id:'help', t:'मदत', d:'डॉक्टरकडे केव्हा जावे', min:15}
+  ]
+};
+try { HM.age = localStorage.getItem('hm_age') || ''; } catch(e) {}
+
+function el(id){ return document.getElementById(id); }
+
+function setAge(a){
+  HM.age = a;
+  try { localStorage.setItem('hm_age', a); } catch(e) {}
+  home();
+}
+function resetAge(){
+  HM.age = '';
+  try { localStorage.removeItem('hm_age'); } catch(e) {}
+  home();
+}
+
+function home(){
+  el('back').style.display = 'none';
+  if(!HM.age){
+    el('main').innerHTML =
+      '<div class="card"><h2>तुमचे वय निवडा</h2><p>वयानुसार योग्य माहिती दाखवली जाईल.</p>' +
+      '<button class="btn alt" onclick="setAge(\'0\')">१५ पेक्षा कमी</button>' +
+      '<button class="btn" onclick="setAge(\'15\')">१५ ते १७</button>' +
+      '<button class="btn" onclick="setAge(\'18\')">१८ किंवा जास्त</button></div>';
+    return;
+  }
+  if(HM.age === '0'){
+    el('main').innerHTML =
+      '<div class="card"><h2>धन्यवाद</h2><p>हे अॅप १५ वर्षांपुढील साठी आहे. कृपया पालक किंवा शिक्षकांशी बोला.</p>' +
+      '<button class="btn alt" onclick="resetAge()">वय बदला</button></div>';
+    return;
+  }
+  var lvl = parseInt(HM.age, 10);
+  var h = '';
+  HM.items.forEach(function(i){
+    var ok = lvl >= i.min;
+    h += '<div class="card' + (ok ? '' : ' lock') + '" onclick="' +
+         (ok ? "openPage('" + i.id + "')" : '') + '"><h2>' + i.t + '</h2><p>' + i.d + '</p></div>';
+  });
+  h += '<p class="note">ही माहिती शिक्षणासाठी आहे. डॉक्टरचा पर्याय नाही.</p>' +
+       '<button class="btn alt" onclick="resetAge()">वय बदला</button>';
+  el('main').innerHTML = h;
+}
+
+function openPage(id){
+  el('back').style.display = 'block';
+  var p = HM.pages[id];
+  el('main').innerHTML = p ? p :
+    '<div class="card"><h2>लवकरच</h2><p>ही माहिती पुढच्या भागात येईल.</p></div>';
+  window.scrollTo(0, 0);
+}
+
+home();
+</script>
+<!-- नवीन भाग येथे जोडा -->
+</body>
+</html>
